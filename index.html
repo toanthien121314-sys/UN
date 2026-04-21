@@ -180,6 +180,57 @@
         sendToSheet('Vitamin', name);
       }
     }
+    // Thêm biến để lưu ngày
+let lastDate = localStorage.getItem('lastDate') || "";
+
+// Hàm kiểm tra ngày mới khi vừa mở App
+function checkNewDay() {
+    const today = new Date().toLocaleDateString('vi-VN');
+    
+    if (lastDate !== today) {
+        // Đã qua ngày mới hoặc lần đầu mở app
+        currentWater = 0;
+        localStorage.setItem('currentWater', 0);
+        localStorage.setItem('lastDate', today);
+        
+        // Reset giao diện
+        document.getElementById('water-current').innerText = 0;
+        document.getElementById('water-container').classList.remove('goal-reached');
+        document.getElementById('check-vit-c').classList.remove('done');
+        
+        // Cập nhật lại biến ngày
+        lastDate = today;
+    } else {
+        // Vẫn trong ngày cũ, lấy lại số nước đã uống từ bộ nhớ máy
+        currentWater = parseInt(localStorage.getItem('currentWater')) || 0;
+        document.getElementById('water-current').innerText = currentWater;
+        if (currentWater >= 2000) {
+            document.getElementById('water-container').classList.add('goal-reached');
+        }
+    }
+}
+
+// Cập nhật lại hàm addWater để lưu vào bộ nhớ máy
+function addWater(ml) {
+    currentWater += ml;
+    localStorage.setItem('currentWater', currentWater); // Lưu lại để không mất khi load lại trang
+    
+    const waterDisplay = document.getElementById('water-current');
+    const container = document.getElementById('water-container');
+    
+    waterDisplay.innerText = currentWater;
+
+    if (currentWater >= 2000) {
+        container.classList.add('goal-reached');
+    } else {
+        container.classList.remove('goal-reached');
+    }
+
+    sendToSheet('Water', ml);
+}
+
+// Chạy hàm kiểm tra ngay khi trang web tải xong
+window.onload = checkNewDay;
   </script>
 </body>
 </html>
