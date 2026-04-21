@@ -222,7 +222,7 @@
     <div class="nav-item" onclick="switchTab('history', this)"><i class="bi bi-clock-history fs-3"></i></div>
     <div class="nav-item" onclick="switchTab('settings', this)"><i class="bi bi-gear-fill fs-3"></i></div>
   </div>
-
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbxJw7KsWwTi27pWk5MG02Hi5tIFTZBoCizHDhHVoMPSbDG49OTvKFi0qTI1yYKCz8Je/exec"; 
     let currentWater = 0;
@@ -240,9 +240,39 @@
       
       circle.style.strokeDashoffset = offset;
 
-      if (value >= goal) container.classList.add('goal-reached');
-      else container.classList.remove('goal-reached');
+      // Kiểm tra nếu đạt chỉ tiêu thì bắn pháo hoa
+    if (value >= goal) {
+      if (!container.classList.contains('goal-reached')) {
+        launchFireworks(); // Chỉ bắn pháo hoa khi vừa chạm mốc lần đầu
+      }
+      container.classList.add('goal-reached');
+    } else {
+      container.classList.remove('goal-reached');
     }
+    }
+    // Hàm tạo hiệu ứng pháo hoa chuyên nghiệp
+function launchFireworks() {
+  var duration = 3 * 1000; // Bắn trong 3 giây
+  var animationEnd = Date.now() + duration;
+  var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+  function randomInRange(min, max) {
+    return Math.random() * (max - min) + min;
+  }
+
+  var interval = setInterval(function() {
+    var timeLeft = animationEnd - Date.now();
+
+    if (timeLeft <= 0) {
+      return clearInterval(interval);
+    }
+
+    var particleCount = 50 * (timeLeft / duration);
+    // Bắn từ hai phía trái phải màn hình
+    confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+    confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+  }, 250);
+}
 
     // ĐỒNG BỘ 2 LỚP: ƯU TIÊN MÁY TÍNH -> NGẦM KIỂM TRA SERVER
     async function initApp() {
