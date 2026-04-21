@@ -142,30 +142,50 @@
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbxLsoTDfpyHDG60gbEQjkDD4S9MZJmwuUD8jpbeBjI-U1k_cq8wgHvSG--Ow4uHKYpJ/exec"; 
+    const API_URL = "https://script.google.com/macros/s/AKfycbxOULt4AlBBSwk-glXJlu0I73ulfuSr6yyBfH-E3v1zFqPY0GWk66LhofMgkFgfG-gQ/exec"; 
     let currentWater = 0;
     let lastDate = localStorage.getItem('meowHealthDate') || "";
 
-    function checkNewDay() {
-      const today = new Date().toLocaleDateString('vi-VN');
-      if (lastDate !== today) {
-        currentWater = 0;
-        localStorage.setItem('meowHealthWater', 0);
-        localStorage.setItem('meowHealthVitC', 'false');
-        localStorage.setItem('meowHealthDate', today);
-        lastDate = today;
-      } else {
-        currentWater = parseInt(localStorage.getItem('meowHealthWater')) || 0;
-        if (localStorage.getItem('meowHealthVitC') === 'true') {
-          document.getElementById('check-vit-c').classList.add('done');
-        }
-      }
+    // 1. ĐỒNG BỘ DỮ LIỆU KHI MỞ APP
+    async function syncWithServer() {
       const waterDisplay = document.getElementById('water-current');
       const container = document.getElementById('water-container');
-      waterDisplay.innerText = currentWater;
-      if (currentWater >= 2000) container.classList.add('goal-reached');
-      else container.classList.remove('goal-reached');
+      const vitCheck = document.getElementById('check-vit-c');
+
+      waterDisplay.innerText = "..."; // Hiệu ứng đang tải
+
+      try {
+        const response = await fetch(API_URL + "?action=sync");
+        const serverData = await response.json();
+
+        // Cập nhật biến hiện tại bằng dữ liệu từ Server (Source of Truth)
+        currentWater = serverData.water;
+        
+        // Cập nhật giao diện
+        waterDisplay.innerText = currentWater;
+        if (currentWater >= 2000) container.classList.add('goal-reached');
+        else container.classList.remove('goal-reached');
+
+        if (serverData.vit) vitCheck.classList.add('done');
+        else vitCheck.classList.remove('done');
+
+        // Lưu lại vào LocalStorage để dùng khi mất mạng
+        localStorage.setItem('meowHealthWater', currentWater);
+        localStorage.setItem('meowHealthVitC', serverData.vit ? 'true' : 'false');
+        localStorage.setItem('meowHealthDate', serverData.date);
+
+      } catch (error) {
+        console.error("Lỗi đồng bộ, dùng dữ liệu offline");
+        // Nếu lỗi mạng, dùng tạm dữ liệu cũ trong máy
+        currentWater = parseInt(localStorage.getItem('meowHealthWater')) || 0;
+        waterDisplay.innerText = currentWater;
+        if (localStorage.getItem('meowHealthVitC') === 'true') vitCheck.classList.add('done');
+      }
     }
+
+    // [Các hàm addWater, toggleVit, sendToSheet giữ nguyên...]
+
+    
 
     async function sendToSheet(type, value) {
       try {
@@ -236,7 +256,7 @@
       }
     }
 
-    window.onload = checkNewDay;
+    window.onload = syncWithServer;
   </script>
 </body>
 </html>
