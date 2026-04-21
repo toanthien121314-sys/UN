@@ -84,13 +84,44 @@
     
     /* --- LỊCH SỬ --- */
     .history-item {
-      display: flex; justify-content: space-between; align-items: center;
-      background: rgba(255, 255, 255, 0.05); border-radius: 15px;
-      padding: 15px; margin-bottom: 10px; border-left: 4px solid var(--primary);
-    }
-    .history-date { font-weight: 700; font-size: 0.95rem; }
-    .history-stats { text-align: right; font-size: 0.85rem; }
-    .text-success-health { color: var(--success); font-weight: bold;}
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* Căn giữa theo chiều dọc */
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 18px;
+  padding: 18px 20px;
+  margin-bottom: 12px;
+  border-left: 5px solid var(--primary);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.history-date {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text);
+  flex: 1; /* Chiếm không gian bên trái */
+}
+
+.history-stats {
+  text-align: right;
+  flex: 1; /* Chiếm không gian bên phải */
+}
+
+.stat-water {
+  font-weight: 800;
+  font-size: 1rem;
+  margin-bottom: 2px;
+}
+
+.stat-vit {
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+.text-success-health {
+  color: var(--success) !important;
+  text-shadow: 0 0 10px rgba(46, 204, 113, 0.3);
+}
   </style>
 </head>
 <body>
@@ -146,7 +177,7 @@
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbwZKqjrihyHTmzyfcdY7dKbS2iS85Cg4H_wcEcPcuQiMkdla9t1t2BqSYyvsi8WVaXq/exec"; 
+    const API_URL = "https://script.google.com/macros/s/AKfycbxJS9xKpJW0yuL_DRW2VZWbmzC9DZXOh_VARs-ILimljaZfACsuzF7qzZvt3pXN5qwh/exec"; 
     let currentWater = 0;
     let lastDate = localStorage.getItem('meowHealthDate') || "";
 
@@ -233,36 +264,36 @@
 
     // 6. LẤY DỮ LIỆU LỊCH SỬ TỪ SHEET 2
     async function loadHistory() {
-      const listEl = document.getElementById('history-list');
-      listEl.innerHTML = '<div class="text-center opacity-50 small mt-5"><div class="spinner-border text-warning" role="status"></div><br>Đang tải...</div>';
-      
-      try {
-        const response = await fetch(API_URL);
-        const data = await response.json();
+  const listEl = document.getElementById('history-list');
+  listEl.innerHTML = '<div class="text-center opacity-50 small mt-5"><div class="spinner-border text-warning" role="status"></div><br>Đang tải dữ liệu...</div>';
+  
+  try {
+    const response = await fetch(API_URL);
+    const data = await response.json();
+    
+    let html = '';
+    if (data.length === 0) {
+      html = '<div class="text-center opacity-50 mt-4">Chưa có lịch sử lưu trữ</div>';
+    } else {
+      data.forEach(item => {
+        const isGoal = item.water >= 2000 ? 'text-success-health' : '';
+        const vitIcon = item.vitamin === 'Đã uống' ? '✅ Vitamin C' : '❌ Vitamin C';
         
-        let html = '';
-        if (data.length === 0) {
-          html = '<div class="text-center opacity-50 mt-4">Chưa có lịch sử lưu trữ</div>';
-        } else {
-          data.forEach(item => {
-            const isGoal = item.water >= 2000 ? 'text-success-health' : '';
-            const vitIcon = item.vitamin === 'Đã uống' ? '✅ Vit C' : '❌ Chưa uống Vit';
-            
-            html += `
-              <div class="history-item">
-                <div class="history-date">${item.date}</div>
-                <div class="history-stats">
-                  <div class="${isGoal}">${item.water}ml / 2000ml</div>
-                  <div class="small opacity-50">${vitIcon}</div>
-                </div>
-              </div>`;
-          });
-        }
-        listEl.innerHTML = html;
-      } catch (e) {
-        listEl.innerHTML = '<div class="text-center text-danger mt-4">Không thể tải dữ liệu</div>';
-      }
+        html += `
+          <div class="history-item">
+            <div class="history-date">${item.date}</div>
+            <div class="history-stats">
+              <div class="stat-water ${isGoal}">${item.water} ml</div>
+              <div class="stat-vit">${vitIcon}</div>
+            </div>
+          </div>`;
+      });
     }
+    listEl.innerHTML = html;
+  } catch (e) {
+    listEl.innerHTML = '<div class="text-center text-danger mt-4">Lỗi kết nối dữ liệu lịch sử</div>';
+  }
+}
 
     // Chạy kiểm tra ngày mới khi web vừa tải xong
     window.onload = checkNewDay;
