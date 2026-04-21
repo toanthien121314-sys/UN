@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <title>Meow Health - Water & Vitamin</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  
+  <style>
+    :root {
+      --primary: #FF8C00; /* Cam rực rỡ */
+      --bg: #000000;      /* Đen sâu */
+      --card-bg: rgba(255, 255, 255, 0.08); /* Glassmorphism */
+      --text: #ffffff;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0; padding-bottom: 80px;
+      overflow-x: hidden;
+    }
+
+    /* --- HIỆU ỨNG GLASSMORPHISM --- */
+    .glass-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      padding: 20px;
+      margin-bottom: 15px;
+    }
+
+    /* --- WATER PROGRESS --- */
+    .water-circle {
+      width: 180px; height: 180px;
+      border-radius: 50%;
+      border: 8px solid rgba(255, 140, 0, 0.2);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      margin: 20px auto;
+      position: relative;
+      background: radial-gradient(circle, rgba(255,140,0,0.1) 0%, transparent 70%);
+    }
+    .water-value { font-size: 2rem; font-weight: 800; color: var(--primary); }
+
+    /* --- BUTTONS --- */
+    .btn-add-water {
+      background: var(--primary);
+      color: #000; font-weight: 700;
+      border-radius: 12px; border: none;
+      padding: 10px 20px; transition: 0.3s;
+    }
+    .btn-add-water:active { transform: scale(0.95); }
+
+    /* --- VITAMIN LIST --- */
+    .vit-item {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .vit-item:last-child { border: none; }
+    .check-box {
+      width: 28px; height: 28px;
+      border-radius: 8px;
+      border: 2px solid var(--primary);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .check-box.done { background: var(--primary); color: #000; }
+
+    /* --- NAV BAR --- */
+    .nav-bar {
+      position: fixed; bottom: 0; width: 100%;
+      height: 70px; background: rgba(26, 26, 26, 0.9);
+      backdrop-filter: blur(15px);
+      display: flex; justify-content: space-around; align-items: center;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    .nav-item { color: #666; font-size: 1.2rem; cursor: pointer; }
+    .nav-item.active { color: var(--primary); }
+  </style>
+</head>
+<body>
+
+  <div class="container mt-4">
+    <h2 class="fw-bold text-center mb-4">Meow <span style="color: var(--primary)">Health</span></h2>
+
+    <div class="glass-card text-center">
+      <h6 class="text-uppercase small fw-bold opacity-50">Lượng nước hôm nay</h6>
+      <div class="water-circle">
+        <i class="bi bi-droplet-fill text-primary mb-1"></i>
+        <div class="water-value" id="water-current">1200</div>
+        <div class="small opacity-50">/ 2000 ml</div>
+      </div>
+      <div class="d-flex justify-content-center gap-2">
+        <button class="btn-add-water" onclick="addWater(200)">+ 200ml</button>
+        <button class="btn-add-water" onclick="addWater(500)">+ 500ml</button>
+      </div>
+    </div>
+
+    <div class="glass-card">
+      <h6 class="text-uppercase small fw-bold opacity-50 mb-3">Vitamin & Thực phẩm chức năng</h6>
+      <div id="vitamin-list">
+        <div class="vit-item">
+          <span>Vitamin C (Sáng)</span>
+          <div class="check-box" onclick="toggleVit(this)"><i class="bi bi-check-lg"></i></div>
+        </div>
+        <div class="vit-item">
+          <span>Omega 3 (Trưa)</span>
+          <div class="check-box done"><i class="bi bi-check-lg"></i></div>
+        </div>
+        <div class="vit-item">
+          <span>Kẽm (Tối)</span>
+          <div class="check-box" onclick="toggleVit(this)"><i class="bi bi-check-lg"></i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-bar">
+    <div class="nav-item active"><i class="bi bi-house-heart"></i></div>
+    <div class="nav-item"><i class="bi bi-graph-up"></i></div>
+    <div class="nav-item"><i class="bi bi-gear"></i></div>
+  </div>
+
+  <script>
+    let currentWater = 1200;
+
+    function addWater(ml) {
+      currentWater += ml;
+      document.getElementById('water-current').innerText = currentWater;
+      // Ở đây bạn có thể gọi API callGoogleApi để lưu vào Sheet giống app Meow Fin
+    }
+
+    function toggleVit(el) {
+      el.classList.toggle('done');
+      // Lưu trạng thái uống vitamin vào Sheet
+    }
+  </script>
+</body>
+</html>
