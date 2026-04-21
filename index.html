@@ -174,38 +174,75 @@
     const API_URL = "https://script.google.com/macros/s/AKfycbxOULt4AlBBSwk-glXJlu0I73ulfuSr6yyBfH-E3v1zFqPY0GWk66LhofMgkFgfG-gQ/exec"; 
     let currentWater = 0;
 
-    // ĐỒNG BỘ DỮ LIỆU KHI MỞ APP
-    async function syncWithServer() {
+    // ĐỒNG BỘ 2 LỚP: ƯU TIÊN MÁY TÍNH -> NGẦM KIỂM TRA SERVER
+    async function initApp() {
       const waterDisplay = document.getElementById('water-current');
       const container = document.getElementById('water-container');
       const vitCheck = document.getElementById('check-vit-c');
 
-      waterDisplay.innerText = "..."; 
+      // --- BƯỚC 1: LẤY DỮ LIỆU LOCAL VÀ HIỂN THỊ NGAY LẬP TỨC ---
+      const todayStr = new Date().toLocaleDateString('vi-VN');
+      const savedDate = localStorage.getItem('meowHealthDate') || "";
 
+      // Kiểm tra ngày: Nếu qua ngày mới ở local, reset tạm về 0
+      if (savedDate !== todayStr) {
+        currentWater = 0;
+        localStorage.setItem('meowHealthWater', 0);
+        localStorage.setItem('meowHealthVitC', 'false');
+        localStorage.setItem('meowHealthDate', todayStr);
+      } else {
+        // Cùng ngày, lấy số cũ hiển thị luôn
+        currentWater = parseInt(localStorage.getItem('meowHealthWater')) || 0;
+        if (localStorage.getItem('meowHealthVitC') === 'true') {
+          vitCheck.classList.add('done');
+        }
+      }
+
+      // Đẩy dữ liệu ra UI ngay tắp lự
+      waterDisplay.innerText = currentWater;
+      if (currentWater >= 2000) container.classList.add('goal-reached');
+      else container.classList.remove('goal-reached');
+
+
+      // --- BƯỚC 2: ĐỒNG BỘ NGẦM (SILENT SYNC) VỚI GOOGLE SHEET ---
       try {
         const response = await fetch(API_URL + "?action=sync");
         const serverData = await response.json();
 
-        currentWater = serverData.water;
+        // --- BƯỚC 3: SO SÁNH VÀ ĐIỀU CHỈNH (NẾU CẦN) ---
+        // Chỉ cập nhật lại giao diện nếu dữ liệu trên Server KHÁC với dưới máy
+        const localVit = localStorage.getItem('meowHealthVitC') === 'true';
         
-        waterDisplay.innerText = currentWater;
-        if (currentWater >= 2000) container.classList.add('goal-reached');
-        else container.classList.remove('goal-reached');
+        if (serverData.water !== currentWater || serverData.vit !== localVit || serverData.date !== savedDate) {
+          console.log("Phát hiện dữ liệu mới từ máy chủ. Đang cập nhật...");
+          
+          currentWater = serverData.water;
+          
+          // Cập nhật lại UI ngầm
+          waterDisplay.innerText = currentWater;
+          if (currentWater >= 2000) container.classList.add('goal-reached');
+          else container.classList.remove('goal-reached');
 
-        if (serverData.vit) vitCheck.classList.add('done');
-        else vitCheck.classList.remove('done');
+          if (serverData.vit) vitCheck.classList.add('done');
+          else vitCheck.classList.remove('done');
 
-        localStorage.setItem('meowHealthWater', currentWater);
-        localStorage.setItem('meowHealthVitC', serverData.vit ? 'true' : 'false');
-        localStorage.setItem('meowHealthDate', serverData.date);
+          // Lưu số mới vào máy
+          localStorage.setItem('meowHealthWater', currentWater);
+          localStorage.setItem('meowHealthVitC', serverData.vit ? 'true' : 'false');
+          localStorage.setItem('meowHealthDate', serverData.date);
+        } else {
+          console.log("Dữ liệu đã đồng bộ, không cần chỉnh sửa.");
+        }
 
       } catch (error) {
-        console.error("Lỗi đồng bộ, dùng dữ liệu offline");
-        currentWater = parseInt(localStorage.getItem('meowHealthWater')) || 0;
-        waterDisplay.innerText = currentWater;
-        if (localStorage.getItem('meowHealthVitC') === 'true') vitCheck.classList.add('done');
+        console.log("Đang offline hoặc lỗi mạng. Tiếp tục dùng dữ liệu trên máy.");
       }
     }
+
+    // [Giữ nguyên các hàm sendToSheet, addWater, toggleVit, switchTab, loadHistory...]
+
+    // CHÚ Ý: Nhớ đổi tên hàm chạy lúc tải trang ở dòng cuối cùng thành initApp nhé!
+    window.onload = initApp;
 
     async function sendToSheet(type, value) {
       try {
@@ -317,7 +354,7 @@
       deferredPrompt = null;
     });
 
-    window.onload = syncWithServer;
+    window.onload = initApp;;
   </script>
   <script>
     if ('serviceWorker' in navigator) {
