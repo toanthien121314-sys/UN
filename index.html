@@ -9,9 +9,9 @@
   <style>
     :root {
       --primary: #FF8C00; 
-      --bg: #000000;      
-      --card-bg: rgba(255, 255, 255, 0.08); 
-      --text: #ffffff;
+      --bg: #F0F4F8; /* Nền xám xanh cực nhạt, tạo cảm giác sạch sẽ, hiện đại */
+      --card-bg: rgba(255, 255, 255, 0.85); /* Hiệu ứng kính mờ nền trắng */
+      --text: #2C3E50; /* Chữ xám đậm, dễ đọc mà không bị chói như đen tuyền */
       --success: #2ecc71;
     }
 
@@ -25,69 +25,81 @@
 
     .glass-card {
       background: var(--card-bg);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 1);
       border-radius: 24px;
       padding: 20px;
       margin-bottom: 15px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05); /* Đổ bóng rất nhẹ để thẻ nổi lên */
     }
 
+    /* --- VÒNG TRÒN NƯỚC --- */
     .water-circle {
       width: 180px; height: 180px;
       border-radius: 50%;
-      border: 8px solid rgba(255, 140, 0, 0.2);
+      border: 8px solid rgba(255, 140, 0, 0.15);
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
       margin: 20px auto;
-      background: radial-gradient(circle, rgba(255,140,0,0.1) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(255,140,0,0.05) 0%, transparent 70%);
       transition: all 0.5s ease;
     }
     #water-icon { color: var(--primary); font-size: 1.5rem; transition: all 0.5s ease; }
     .water-value { font-size: 2.2rem; font-weight: 800; color: var(--primary); transition: all 0.5s ease; }
 
+    /* --- TRẠNG THÁI ĐẠT MỤC TIÊU --- */
     .goal-reached {
-      border-color: rgba(46, 204, 113, 0.4) !important;
-      background: radial-gradient(circle, rgba(46, 204, 113, 0.2) 0%, transparent 70%) !important;
+      border-color: rgba(46, 204, 113, 0.3) !important;
+      background: radial-gradient(circle, rgba(46, 204, 113, 0.08) 0%, transparent 70%) !important;
     }
     .goal-reached #water-current, .goal-reached #water-icon {
       color: var(--success) !important;
-      text-shadow: 0 0 15px rgba(46, 204, 113, 0.6);
+      text-shadow: 0 0 15px rgba(46, 204, 113, 0.2);
     }
 
+    /* --- NÚT BẤM & CHECKBOX --- */
     .btn-main {
-      background: var(--primary); color: #000; font-weight: 700;
+      background: var(--primary); color: #ffffff; /* Chữ trắng trên nền cam */
+      font-weight: 700;
       border-radius: 12px; border: none; padding: 12px 20px; transition: 0.2s; width: 100%;
+      box-shadow: 0 4px 12px rgba(255, 140, 0, 0.25);
     }
     .btn-main:active { transform: scale(0.98); }
     
-    .vit-item { display: flex; align-items: center; justify-content: space-between; padding: 15px 0; }
+    .vit-item { display: flex; align-items: center; justify-content: space-between; padding: 15px 0; font-weight: 500;}
     .check-box {
       width: 32px; height: 32px; border-radius: 10px;
       border: 2px solid var(--primary); cursor: pointer;
       display: flex; align-items: center; justify-content: center; transition: 0.3s;
+      background: #ffffff;
     }
-    .check-box.done { background: var(--primary); color: #000; }
+    .check-box.done { background: var(--primary); color: #ffffff; }
 
+    /* --- THANH ĐIỀU HƯỚNG --- */
     .nav-bar {
       position: fixed; bottom: 0; width: 100%; height: 75px;
-      background: rgba(20, 20, 20, 0.8); backdrop-filter: blur(20px);
+      background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(20px);
       display: flex; justify-content: space-around; align-items: center;
-      border-top: 1px solid rgba(255,255,255,0.1); z-index: 1000;
+      border-top: 1px solid rgba(0,0,0,0.05); z-index: 1000;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.03);
     }
-    .nav-item { color: #444; font-size: 1.4rem; cursor: pointer; transition: 0.2s; }
+    .nav-item { color: #A0AEC0; font-size: 1.4rem; cursor: pointer; transition: 0.2s; }
     
+    /* --- LỊCH SỬ --- */
     .history-item {
       display: flex; justify-content: space-between; align-items: center;
-      background: rgba(255, 255, 255, 0.05); border-radius: 18px;
+      background: #ffffff; border-radius: 18px;
       padding: 15px 20px; margin-bottom: 12px; border-left: 5px solid var(--primary);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.03);
     }
     .history-date { font-weight: 700; font-size: 0.95rem; flex: 1; }
     .history-stats { text-align: right; flex: 1; }
     .stat-water { font-weight: 800; font-size: 1rem; }
-    .stat-vit { font-size: 0.75rem; opacity: 0.6; margin-top: 2px; }
+    .stat-vit { font-size: 0.75rem; color: #7F8C8D; margin-top: 2px; }
     .text-success-health { color: var(--success) !important; }
+
+    .opacity-50 { opacity: 0.7 !important; }
   </style>
 </head>
 <body>
@@ -144,24 +156,21 @@
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbxOULt4AlBBSwk-glXJlu0I73ulfuSr6yyBfH-E3v1zFqPY0GWk66LhofMgkFgfG-gQ/exec"; 
     let currentWater = 0;
-    let lastDate = localStorage.getItem('meowHealthDate') || "";
 
-    // 1. ĐỒNG BỘ DỮ LIỆU KHI MỞ APP
+    // ĐỒNG BỘ DỮ LIỆU KHI MỞ APP
     async function syncWithServer() {
       const waterDisplay = document.getElementById('water-current');
       const container = document.getElementById('water-container');
       const vitCheck = document.getElementById('check-vit-c');
 
-      waterDisplay.innerText = "..."; // Hiệu ứng đang tải
+      waterDisplay.innerText = "..."; 
 
       try {
         const response = await fetch(API_URL + "?action=sync");
         const serverData = await response.json();
 
-        // Cập nhật biến hiện tại bằng dữ liệu từ Server (Source of Truth)
         currentWater = serverData.water;
         
-        // Cập nhật giao diện
         waterDisplay.innerText = currentWater;
         if (currentWater >= 2000) container.classList.add('goal-reached');
         else container.classList.remove('goal-reached');
@@ -169,23 +178,17 @@
         if (serverData.vit) vitCheck.classList.add('done');
         else vitCheck.classList.remove('done');
 
-        // Lưu lại vào LocalStorage để dùng khi mất mạng
         localStorage.setItem('meowHealthWater', currentWater);
         localStorage.setItem('meowHealthVitC', serverData.vit ? 'true' : 'false');
         localStorage.setItem('meowHealthDate', serverData.date);
 
       } catch (error) {
         console.error("Lỗi đồng bộ, dùng dữ liệu offline");
-        // Nếu lỗi mạng, dùng tạm dữ liệu cũ trong máy
         currentWater = parseInt(localStorage.getItem('meowHealthWater')) || 0;
         waterDisplay.innerText = currentWater;
         if (localStorage.getItem('meowHealthVitC') === 'true') vitCheck.classList.add('done');
       }
     }
-
-    // [Các hàm addWater, toggleVit, sendToSheet giữ nguyên...]
-
-    
 
     async function sendToSheet(type, value) {
       try {
@@ -221,12 +224,14 @@
       document.getElementById('tab-history').style.display = 'none';
       document.getElementById('tab-settings').style.display = 'none';
       document.getElementById('tab-' + tabName).style.display = 'block';
-      document.querySelectorAll('.nav-item').forEach(item => item.style.color = '#444');
+      
+      // CHỈNH SỬA Ở ĐÂY: Reset màu icon về màu xám nhạt của Light Mode
+      document.querySelectorAll('.nav-item').forEach(item => item.style.color = '#A0AEC0'); 
       el.style.color = 'var(--primary)';
+      
       if (tabName === 'history') loadHistory();
     }
 
-    // 6. LẤY DỮ LIỆU LỊCH SỬ TỪ SHEET 2
     async function loadHistory() {
       const listEl = document.getElementById('history-list');
       listEl.innerHTML = '<div class="text-center opacity-50 small mt-5">Đang tải dữ liệu...</div>';
