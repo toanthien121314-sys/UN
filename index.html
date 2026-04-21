@@ -34,7 +34,7 @@
       box-shadow: 0 8px 32px rgba(0,0,0,0.3);
     }
 
-    /* --- VÙNG VÒNG TRÒN NƯỚC --- */
+    /* --- VÒNG TRÒN NƯỚC --- */
     .water-circle {
       width: 180px; height: 180px;
       border-radius: 50%;
@@ -45,64 +45,52 @@
       background: radial-gradient(circle, rgba(255,140,0,0.1) 0%, transparent 70%);
       transition: all 0.5s ease;
     }
+    #water-icon { color: var(--primary); font-size: 1.5rem; transition: all 0.5s ease; }
+    .water-value { font-size: 2.2rem; font-weight: 800; color: var(--primary); transition: all 0.5s ease; }
 
-    #water-icon {
-      color: var(--primary);
-      font-size: 1.5rem;
-      transition: all 0.5s ease;
-    }
-
-    .water-value { 
-      font-size: 2.2rem; 
-      font-weight: 800; 
-      color: var(--primary); 
-      transition: all 0.5s ease;
-    }
-
-    /* --- HIỆU ỨNG KHI ĐẠT MỤC TIÊU (MÀU XANH) --- */
+    /* --- TRẠNG THÁI ĐẠT MỤC TIÊU --- */
     .goal-reached {
       border-color: rgba(46, 204, 113, 0.4) !important;
       background: radial-gradient(circle, rgba(46, 204, 113, 0.2) 0%, transparent 70%) !important;
     }
-
-    .goal-reached #water-current,
-    .goal-reached #water-icon {
+    .goal-reached #water-current, .goal-reached #water-icon {
       color: var(--success) !important;
       text-shadow: 0 0 15px rgba(46, 204, 113, 0.6);
     }
 
-    /* --- NÚT BẤM --- */
+    /* --- NÚT BẤM & CHECKBOX --- */
     .btn-main {
-      background: var(--primary);
-      color: #000; font-weight: 700;
-      border-radius: 12px; border: none;
-      padding: 12px 20px; transition: 0.2s;
-      width: 100%;
+      background: var(--primary); color: #000; font-weight: 700;
+      border-radius: 12px; border: none; padding: 12px 20px; transition: 0.2s; width: 100%;
     }
     .btn-main:active { transform: scale(0.98); }
-
-    .vit-item {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 15px 0;
-    }
-
+    
+    .vit-item { display: flex; align-items: center; justify-content: space-between; padding: 15px 0; }
     .check-box {
       width: 32px; height: 32px; border-radius: 10px;
       border: 2px solid var(--primary); cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: 0.3s;
+      display: flex; align-items: center; justify-content: center; transition: 0.3s;
     }
     .check-box.done { background: var(--primary); color: #000; }
 
+    /* --- THANH ĐIỀU HƯỚNG --- */
     .nav-bar {
       position: fixed; bottom: 0; width: 100%; height: 75px;
       background: rgba(20, 20, 20, 0.8); backdrop-filter: blur(20px);
       display: flex; justify-content: space-around; align-items: center;
-      border-top: 1px solid rgba(255,255,255,0.1);
-      z-index: 1000;
+      border-top: 1px solid rgba(255,255,255,0.1); z-index: 1000;
     }
-    .nav-item { color: #555; font-size: 1.4rem; cursor: pointer; }
-    .nav-item.active { color: var(--primary); }
+    .nav-item { color: #444; font-size: 1.4rem; cursor: pointer; transition: 0.2s; }
+    
+    /* --- LỊCH SỬ --- */
+    .history-item {
+      display: flex; justify-content: space-between; align-items: center;
+      background: rgba(255, 255, 255, 0.05); border-radius: 15px;
+      padding: 15px; margin-bottom: 10px; border-left: 4px solid var(--primary);
+    }
+    .history-date { font-weight: 700; font-size: 0.95rem; }
+    .history-stats { text-align: right; font-size: 0.85rem; }
+    .text-success-health { color: var(--success); font-weight: bold;}
   </style>
 </head>
 <body>
@@ -110,40 +98,87 @@
   <div class="container mt-4">
     <h2 class="fw-bold text-center mb-4">Meow <span style="color: var(--primary)">Health</span></h2>
 
-    <div class="glass-card text-center">
-      <h6 class="text-uppercase small fw-bold opacity-50">Lượng nước hôm nay</h6>
-      <div class="water-circle" id="water-container">
-        <i class="bi bi-droplet-fill mb-1" id="water-icon"></i>
-        <div class="water-value" id="water-current">0</div>
-        <div class="small opacity-50">/ 2000 ml</div>
+    <div id="tab-home">
+      <div class="glass-card text-center">
+        <h6 class="text-uppercase small fw-bold opacity-50">Lượng nước hôm nay</h6>
+        <div class="water-circle" id="water-container">
+          <i class="bi bi-droplet-fill mb-1" id="water-icon"></i>
+          <div class="water-value" id="water-current">0</div>
+          <div class="small opacity-50">/ 2000 ml</div>
+        </div>
+        <div class="row g-2">
+          <div class="col-6"><button class="btn-main" onclick="addWater(100)">+ 100ml</button></div>
+          <div class="col-6"><button class="btn-main" onclick="addWater(200)">+ 200ml</button></div>
+        </div>
       </div>
-      <div class="row g-2">
-        <div class="col-6"><button class="btn-main" onclick="addWater(100)">+ 100ml</button></div>
-        <div class="col-6"><button class="btn-main" onclick="addWater(200)">+ 200ml</button></div>
-      </div>
-    </div>
 
-    <div class="glass-card">
-      <h6 class="text-uppercase small fw-bold opacity-50 mb-2">Vitamin hàng ngày</h6>
-      <div class="vit-item">
-        <span>Vitamin C</span>
-        <div class="check-box" id="check-vit-c" onclick="toggleVit('Vitamin C')">
-          <i class="bi bi-check-lg"></i>
+      <div class="glass-card">
+        <h6 class="text-uppercase small fw-bold opacity-50 mb-2">Vitamin hàng ngày</h6>
+        <div class="vit-item">
+          <span>Vitamin C</span>
+          <div class="check-box" id="check-vit-c" onclick="toggleVit('Vitamin C')">
+            <i class="bi bi-check-lg"></i>
+          </div>
         </div>
       </div>
     </div>
+
+    <div id="tab-history" style="display:none;">
+      <h5 class="fw-bold mb-3 ps-2">Lịch sử theo dõi</h5>
+      <div id="history-list">
+        <div class="text-center opacity-50 small mt-5">Đang tải dữ liệu lịch sử...</div>
+      </div>
+    </div>
+    
+    <div id="tab-settings" style="display:none;">
+      <h5 class="fw-bold mb-3 ps-2">Cài đặt</h5>
+      <div class="glass-card text-center opacity-50">
+        <p class="mb-0">Tính năng đang phát triển...</p>
+      </div>
+    </div>
+
   </div>
 
   <div class="nav-bar">
-    <div class="nav-item active"><i class="bi bi-house-heart-fill"></i></div>
-    <div class="nav-item"><i class="bi bi-graph-up"></i></div>
-    <div class="nav-item"><i class="bi bi-gear-fill"></i></div>
+    <div class="nav-item" onclick="switchTab('home', this)" style="color: var(--primary)"><i class="bi bi-house-heart-fill fs-3"></i></div>
+    <div class="nav-item" onclick="switchTab('history', this)"><i class="bi bi-clock-history fs-3"></i></div>
+    <div class="nav-item" onclick="switchTab('settings', this)"><i class="bi bi-gear-fill fs-3"></i></div>
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbw6erhDetOsh0-_c6sVBlW2qOg5NacgQFrOJWnCjJqVOfffT6kMnt5HlDCjWUxw27ls/exec"; 
+    const API_URL = "https://script.google.com/macros/s/AKfycbwPRCvrzQ7MoPiF6gEhk8usBid7qWcIFhLv_2akZ0PW-PJXs41WsEjWDaQnCkS1uNfe/exec"; 
     let currentWater = 0;
+    let lastDate = localStorage.getItem('meowHealthDate') || "";
 
+    // 1. KIỂM TRA NGÀY MỚI KHI MỞ APP
+    function checkNewDay() {
+      const today = new Date().toLocaleDateString('vi-VN');
+      
+      if (lastDate !== today) {
+        // Qua ngày mới -> Reset về 0
+        currentWater = 0;
+        localStorage.setItem('meowHealthWater', 0);
+        localStorage.setItem('meowHealthVitC', 'false');
+        localStorage.setItem('meowHealthDate', today);
+        lastDate = today;
+      } else {
+        // Trong cùng 1 ngày -> Phục hồi dữ liệu từ bộ nhớ máy
+        currentWater = parseInt(localStorage.getItem('meowHealthWater')) || 0;
+        if (localStorage.getItem('meowHealthVitC') === 'true') {
+          document.getElementById('check-vit-c').classList.add('done');
+        }
+      }
+      
+      // Cập nhật giao diện nước
+      const waterDisplay = document.getElementById('water-current');
+      const container = document.getElementById('water-container');
+      waterDisplay.innerText = currentWater;
+      
+      if (currentWater >= 2000) container.classList.add('goal-reached');
+      else container.classList.remove('goal-reached');
+    }
+
+    // 2. GỬI DỮ LIỆU LÊN GOOGLE SHEET
     async function sendToSheet(type, value) {
       try {
         await fetch(API_URL, {
@@ -151,86 +186,86 @@
           mode: 'no-cors',
           body: JSON.stringify({ action: 'logData', type: type, value: value })
         });
-      } catch (error) {
-        console.error("Lỗi gửi dữ liệu:", error);
-      }
+      } catch (error) { console.error("Lỗi:", error); }
     }
 
+    // 3. CỘNG NƯỚC
     function addWater(ml) {
       currentWater += ml;
+      localStorage.setItem('meowHealthWater', currentWater); // Lưu tạm vào máy
+      
       const waterDisplay = document.getElementById('water-current');
       const container = document.getElementById('water-container');
       
       waterDisplay.innerText = currentWater;
-
-      // Đổi toàn bộ vùng sang màu xanh khi đạt 2000ml
-      if (currentWater >= 2000) {
-        container.classList.add('goal-reached');
-      } else {
-        container.classList.remove('goal-reached');
-      }
-
+      if (currentWater >= 2000) container.classList.add('goal-reached');
+      
       sendToSheet('Water', ml);
     }
 
+    // 4. ĐÁNH DẤU UỐNG VITAMIN
     function toggleVit(name) {
       const el = document.getElementById('check-vit-c');
       if (!el.classList.contains('done')) {
         el.classList.add('done');
+        localStorage.setItem('meowHealthVitC', 'true'); // Lưu trạng thái
         sendToSheet('Vitamin', name);
       }
     }
-    // Thêm biến để lưu ngày
-let lastDate = localStorage.getItem('lastDate') || "";
 
-// Hàm kiểm tra ngày mới khi vừa mở App
-function checkNewDay() {
-    const today = new Date().toLocaleDateString('vi-VN');
-    
-    if (lastDate !== today) {
-        // Đã qua ngày mới hoặc lần đầu mở app
-        currentWater = 0;
-        localStorage.setItem('currentWater', 0);
-        localStorage.setItem('lastDate', today);
+    // 5. CHUYỂN TAB VÀ TẢI LỊCH SỬ
+    function switchTab(tabName, el) {
+      // Ẩn tất cả tab
+      document.getElementById('tab-home').style.display = 'none';
+      document.getElementById('tab-history').style.display = 'none';
+      document.getElementById('tab-settings').style.display = 'none';
+      
+      // Hiện tab được chọn
+      document.getElementById('tab-' + tabName).style.display = 'block';
+      
+      // Đổi màu icon menu
+      document.querySelectorAll('.nav-item').forEach(item => item.style.color = '#444');
+      el.style.color = 'var(--primary)';
+      
+      // Nếu vào tab lịch sử thì gọi API lấy dữ liệu
+      if (tabName === 'history') loadHistory();
+    }
+
+    // 6. LẤY DỮ LIỆU LỊCH SỬ TỪ SHEET 2
+    async function loadHistory() {
+      const listEl = document.getElementById('history-list');
+      listEl.innerHTML = '<div class="text-center opacity-50 small mt-5"><div class="spinner-border text-warning" role="status"></div><br>Đang tải...</div>';
+      
+      try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
         
-        // Reset giao diện
-        document.getElementById('water-current').innerText = 0;
-        document.getElementById('water-container').classList.remove('goal-reached');
-        document.getElementById('check-vit-c').classList.remove('done');
-        
-        // Cập nhật lại biến ngày
-        lastDate = today;
-    } else {
-        // Vẫn trong ngày cũ, lấy lại số nước đã uống từ bộ nhớ máy
-        currentWater = parseInt(localStorage.getItem('currentWater')) || 0;
-        document.getElementById('water-current').innerText = currentWater;
-        if (currentWater >= 2000) {
-            document.getElementById('water-container').classList.add('goal-reached');
+        let html = '';
+        if (data.length === 0) {
+          html = '<div class="text-center opacity-50 mt-4">Chưa có lịch sử lưu trữ</div>';
+        } else {
+          data.forEach(item => {
+            const isGoal = item.water >= 2000 ? 'text-success-health' : '';
+            const vitIcon = item.vitamin === 'Đã uống' ? '✅ Vit C' : '❌ Chưa uống Vit';
+            
+            html += `
+              <div class="history-item">
+                <div class="history-date">${item.date}</div>
+                <div class="history-stats">
+                  <div class="${isGoal}">${item.water}ml / 2000ml</div>
+                  <div class="small opacity-50">${vitIcon}</div>
+                </div>
+              </div>`;
+          });
         }
-    }
-}
-
-// Cập nhật lại hàm addWater để lưu vào bộ nhớ máy
-function addWater(ml) {
-    currentWater += ml;
-    localStorage.setItem('currentWater', currentWater); // Lưu lại để không mất khi load lại trang
-    
-    const waterDisplay = document.getElementById('water-current');
-    const container = document.getElementById('water-container');
-    
-    waterDisplay.innerText = currentWater;
-
-    if (currentWater >= 2000) {
-        container.classList.add('goal-reached');
-    } else {
-        container.classList.remove('goal-reached');
+        listEl.innerHTML = html;
+      } catch (e) {
+        listEl.innerHTML = '<div class="text-center text-danger mt-4">Không thể tải dữ liệu</div>';
+      }
     }
 
-    sendToSheet('Water', ml);
-}
-
-// Chạy hàm kiểm tra ngay khi trang web tải xong
-window.onload = checkNewDay;
+    // Chạy kiểm tra ngày mới khi web vừa tải xong
+    window.onload = checkNewDay;
   </script>
 </body>
 </html>
