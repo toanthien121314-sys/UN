@@ -15,9 +15,9 @@
   <style>
     :root {
       --primary: #FF8C00; 
-      --bg: #F0F4F8; /* Nền xám xanh cực nhạt, tạo cảm giác sạch sẽ, hiện đại */
-      --card-bg: rgba(255, 255, 255, 0.85); /* Hiệu ứng kính mờ nền trắng */
-      --text: #2C3E50; /* Chữ xám đậm, dễ đọc mà không bị chói như đen tuyền */
+      --bg: #F0F4F8; 
+      --card-bg: rgba(255, 255, 255, 0.85); 
+      --text: #2C3E50; 
       --success: #2ecc71;
     }
 
@@ -27,9 +27,9 @@
       font-family: 'Segoe UI', sans-serif;
       margin: 0; padding-bottom: 90px;
       overflow-x: hidden;
-      -webkit-user-select: none; /* Chặn bôi đen chữ trên Chrome/Safari */
-      user-select: none;         /* Chặn bôi đen chuẩn */
-      -webkit-touch-callout: none; /* Chặn menu pop-up hiện lên khi nhấn giữ trên iOS */
+      -webkit-user-select: none; 
+      user-select: none;         
+      -webkit-touch-callout: none; 
     }
 
     .glass-card {
@@ -40,28 +40,32 @@
       border-radius: 24px;
       padding: 20px;
       margin-bottom: 15px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05); /* Đổ bóng rất nhẹ để thẻ nổi lên */
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05); 
     }
 
-    /* --- VÒNG TRÒN NƯỚC --- */
+    /* --- VÒNG TRÒN TIẾN ĐỘ SVG --- */
     .water-circle {
-      width: 180px; height: 180px;
-      border-radius: 50%;
-      border: 8px solid rgba(255, 140, 0, 0.15);
+      width: 200px; height: 200px; 
+      position: relative;
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
-      margin: 20px auto;
-      background: radial-gradient(circle, rgba(255,140,0,0.05) 0%, transparent 70%);
-      transition: all 0.5s ease;
+      margin: 10px auto;
     }
-    #water-icon { color: var(--primary); font-size: 1.5rem; transition: all 0.5s ease; }
-    .water-value { font-size: 2.2rem; font-weight: 800; color: var(--primary); transition: all 0.5s ease; }
+    .progress-ring {
+      position: absolute;
+      top: 0; left: 0;
+      transform: rotate(-90deg); 
+    }
+    .progress-ring__circle {
+      transition: stroke-dashoffset 0.5s ease; 
+      stroke-linecap: round; 
+    }
+    #water-icon { color: var(--primary); font-size: 1.5rem; z-index: 1; transition: all 0.5s ease; }
+    .water-value { font-size: 2.2rem; font-weight: 800; color: var(--primary); z-index: 1; transition: all 0.5s ease; }
+    .water-goal-text { font-size: 0.85rem; opacity: 0.5; z-index: 1; }
 
     /* --- TRẠNG THÁI ĐẠT MỤC TIÊU --- */
-    .goal-reached {
-      border-color: rgba(46, 204, 113, 0.3) !important;
-      background: radial-gradient(circle, rgba(46, 204, 113, 0.08) 0%, transparent 70%) !important;
-    }
+    .goal-reached .progress-ring__circle { stroke: var(--success) !important; }
     .goal-reached #water-current, .goal-reached #water-icon {
       color: var(--success) !important;
       text-shadow: 0 0 15px rgba(46, 204, 113, 0.2);
@@ -69,7 +73,7 @@
 
     /* --- NÚT BẤM & CHECKBOX --- */
     .btn-main {
-      background: var(--primary); color: #ffffff; /* Chữ trắng trên nền cam */
+      background: var(--primary); color: #ffffff; 
       font-weight: 700;
       border-radius: 12px; border: none; padding: 12px 20px; transition: 0.2s; width: 100%;
       box-shadow: 0 4px 12px rgba(255, 140, 0, 0.25);
@@ -119,11 +123,18 @@
     <div id="tab-home">
       <div class="glass-card text-center">
         <h6 class="text-uppercase small fw-bold opacity-50">Lượng nước hôm nay</h6>
+        
         <div class="water-circle" id="water-container">
+          <svg class="progress-ring" width="200" height="200">
+            <circle stroke="rgba(255, 140, 0, 0.1)" stroke-width="8" fill="transparent" r="85" cx="100" cy="100"/>
+            <circle id="progress-bar" class="progress-ring__circle" stroke="#FF8C00" stroke-width="8" stroke-dasharray="534.07" stroke-dashoffset="534.07" fill="transparent" r="85" cx="100" cy="100"/>
+          </svg>
+
           <i class="bi bi-droplet-fill mb-1" id="water-icon"></i>
           <div class="water-value" id="water-current">0</div>
-          <div class="small opacity-50">/ 2000 ml</div>
+          <div class="water-goal-text">/ 2000 ml</div>
         </div>
+
         <div class="row g-2">
           <div class="col-6"><button class="btn-main" onclick="addWater(100)">+ 100ml</button></div>
           <div class="col-6"><button class="btn-main" onclick="addWater(200)">+ 200ml</button></div>
@@ -171,8 +182,25 @@
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbxJw7KsWwTi27pWk5MG02Hi5tIFTZBoCizHDhHVoMPSbDG49OTvKFi0qTI1yYKCz8Je/exec"; 
+    const API_URL = "https://script.google.com/macros/s/AKfycbxJw7KsWwTi27pWk5MG02Hi5tIFTZBoCizHDhHVoMPSbDG49OTvKFi0qTI1yYKCz8Je/exec; 
     let currentWater = 0;
+
+    // HÀM CẬP NHẬT VÒNG TRÒN SVG
+    function updateCircle(value) {
+      const circle = document.getElementById('progress-bar');
+      const container = document.getElementById('water-container');
+      const radius = circle.r.baseVal.value;
+      const circumference = 2 * Math.PI * radius; // Chu vi = 534.07
+
+      const goal = 2000;
+      const percentage = Math.min(value / goal, 1); 
+      const offset = circumference - (percentage * circumference);
+      
+      circle.style.strokeDashoffset = offset;
+
+      if (value >= goal) container.classList.add('goal-reached');
+      else container.classList.remove('goal-reached');
+    }
 
     // ĐỒNG BỘ 2 LỚP: ƯU TIÊN MÁY TÍNH -> NGẦM KIỂM TRA SERVER
     async function initApp() {
@@ -180,37 +208,28 @@
       const container = document.getElementById('water-container');
       const vitCheck = document.getElementById('check-vit-c');
 
-      // --- BƯỚC 1: LẤY DỮ LIỆU LOCAL VÀ HIỂN THỊ NGAY LẬP TỨC ---
       const todayStr = new Date().toLocaleDateString('vi-VN');
       const savedDate = localStorage.getItem('meowHealthDate') || "";
 
-      // Kiểm tra ngày: Nếu qua ngày mới ở local, reset tạm về 0
       if (savedDate !== todayStr) {
         currentWater = 0;
         localStorage.setItem('meowHealthWater', 0);
         localStorage.setItem('meowHealthVitC', 'false');
         localStorage.setItem('meowHealthDate', todayStr);
       } else {
-        // Cùng ngày, lấy số cũ hiển thị luôn
         currentWater = parseInt(localStorage.getItem('meowHealthWater')) || 0;
         if (localStorage.getItem('meowHealthVitC') === 'true') {
           vitCheck.classList.add('done');
         }
       }
 
-      // Đẩy dữ liệu ra UI ngay tắp lự
       waterDisplay.innerText = currentWater;
-      if (currentWater >= 2000) container.classList.add('goal-reached');
-      else container.classList.remove('goal-reached');
+      updateCircle(currentWater); // Cập nhật vòng tròn khi mở app
 
-
-      // --- BƯỚC 2: ĐỒNG BỘ NGẦM (SILENT SYNC) VỚI GOOGLE SHEET ---
       try {
         const response = await fetch(API_URL + "?action=sync");
         const serverData = await response.json();
 
-        // --- BƯỚC 3: SO SÁNH VÀ ĐIỀU CHỈNH (NẾU CẦN) ---
-        // Chỉ cập nhật lại giao diện nếu dữ liệu trên Server KHÁC với dưới máy
         const localVit = localStorage.getItem('meowHealthVitC') === 'true';
         
         if (serverData.water !== currentWater || serverData.vit !== localVit || serverData.date !== savedDate) {
@@ -218,15 +237,12 @@
           
           currentWater = serverData.water;
           
-          // Cập nhật lại UI ngầm
           waterDisplay.innerText = currentWater;
-          if (currentWater >= 2000) container.classList.add('goal-reached');
-          else container.classList.remove('goal-reached');
+          updateCircle(currentWater); // Cập nhật vòng tròn nếu có data từ server
 
           if (serverData.vit) vitCheck.classList.add('done');
           else vitCheck.classList.remove('done');
 
-          // Lưu số mới vào máy
           localStorage.setItem('meowHealthWater', currentWater);
           localStorage.setItem('meowHealthVitC', serverData.vit ? 'true' : 'false');
           localStorage.setItem('meowHealthDate', serverData.date);
@@ -239,11 +255,6 @@
       }
     }
 
-    // [Giữ nguyên các hàm sendToSheet, addWater, toggleVit, switchTab, loadHistory...]
-
-    // CHÚ Ý: Nhớ đổi tên hàm chạy lúc tải trang ở dòng cuối cùng thành initApp nhé!
-    window.onload = initApp;
-
     async function sendToSheet(type, value) {
       try {
         await fetch(API_URL, {
@@ -254,29 +265,22 @@
       } catch (error) { console.error("Lỗi:", error); }
     }
 
-    // THÊM 2 BIẾN NÀY ĐỂ QUẢN LÝ "GOM ĐƠN"
     let waterTimeout;
     let pendingWater = 0;
 
-    // THAY THẾ TOÀN BỘ HÀM addWater CŨ BẰNG ĐOẠN NÀY
     function addWater(ml) {
-      // 1. Cập nhật giao diện mượt mà ngay lập tức
       currentWater += ml;
-      pendingWater += ml; // Cộng dồn lượng nước đang chờ gửi
+      pendingWater += ml; 
       
       localStorage.setItem('meowHealthWater', currentWater);
-      const waterDisplay = document.getElementById('water-current');
-      const container = document.getElementById('water-container');
+      document.getElementById('water-current').innerText = currentWater;
       
-      waterDisplay.innerText = currentWater;
-      if (currentWater >= 2000) container.classList.add('goal-reached');
+      updateCircle(currentWater); // Vòng tròn chạy ngay lập tức khi bấm nút
 
-      // 2. Kỹ thuật "Gom đơn" (Debounce)
-      clearTimeout(waterTimeout); // Hủy lệnh gửi cũ nếu người dùng bấm tiếp
+      clearTimeout(waterTimeout); 
       waterTimeout = setTimeout(() => {
-        // Chỉ thực sự gửi lên mạng sau khi người dùng ngừng bấm 1.5 giây
         sendToSheet('Water', pendingWater);
-        pendingWater = 0; // Gửi xong thì reset số nước chờ
+        pendingWater = 0; 
       }, 1500); 
     }
 
@@ -295,7 +299,6 @@
       document.getElementById('tab-settings').style.display = 'none';
       document.getElementById('tab-' + tabName).style.display = 'block';
       
-      // CHỈNH SỬA Ở ĐÂY: Reset màu icon về màu xám nhạt của Light Mode
       document.querySelectorAll('.nav-item').forEach(item => item.style.color = '#A0AEC0'); 
       el.style.color = 'var(--primary)';
       
@@ -330,47 +333,43 @@
         listEl.innerHTML = '<div class="text-center text-danger mt-4">Lỗi kết nối</div>';
       }
     }
+
     // --- XỬ LÝ NÚT CÀI ĐẶT PWA ---
     let deferredPrompt;
     const installBtn = document.getElementById('btn-install');
     const iosGuide = document.getElementById('ios-guide');
 
-    // 1. Kiểm tra nếu là thiết bị iOS (Apple chặn nút bấm tự động, bắt buộc phải hướng dẫn tay)
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-    // Kiểm tra xem app đã được cài chưa (iOS)
     const isStandalone = window.navigator.standalone === true;
     
     if (isIOS && !isStandalone) {
-      iosGuide.style.display = 'block'; // Hiện hướng dẫn cài bằng tay cho iPhone
+      iosGuide.style.display = 'block'; 
     }
 
-    // 2. Bắt sự kiện cài đặt trên Android / PC (Chrome, Edge...)
     window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault(); // Ngăn trình duyệt tự hiện bảng thông báo
-      deferredPrompt = e; // Lưu lại sự kiện
-      installBtn.style.display = 'block'; // Hiện nút cài đặt của chúng ta
+      e.preventDefault(); 
+      deferredPrompt = e; 
+      installBtn.style.display = 'block'; 
     });
 
-    // 3. Xử lý khi bấm nút Cài đặt
     installBtn.addEventListener('click', async () => {
       if (deferredPrompt) {
-        deferredPrompt.prompt(); // Hiện bảng hỏi cài đặt của máy
+        deferredPrompt.prompt(); 
         const { outcome } = await deferredPrompt.userChoice;
         if (outcome === 'accepted') {
           console.log('Đã đồng ý cài đặt');
         }
-        deferredPrompt = null; // Reset
-        installBtn.style.display = 'none'; // Ẩn nút sau khi bấm
+        deferredPrompt = null; 
+        installBtn.style.display = 'none'; 
       }
     });
 
-    // 4. Ẩn nút đi nếu app đã được cài đặt thành công
     window.addEventListener('appinstalled', () => {
       installBtn.style.display = 'none';
       deferredPrompt = null;
     });
 
-    window.onload = initApp;;
+    window.onload = initApp;
   </script>
   <script>
     if ('serviceWorker' in navigator) {
