@@ -147,8 +147,16 @@
     
     <div id="tab-settings" style="display:none;">
       <h5 class="fw-bold mb-3 ps-2">Cài đặt</h5>
-      <div class="glass-card text-center opacity-50">
-        <p class="mb-0">Tính năng đang phát triển...</p>
+      <div class="glass-card text-center">
+        <h6 class="text-uppercase small fw-bold opacity-50 mb-3">Ứng dụng</h6>
+        
+        <button id="btn-install" class="btn-main mb-2" style="display: none;">
+          <i class="bi bi-download me-2"></i> Cài đặt App ra màn hình
+        </button>
+        
+        <p id="ios-guide" class="small text-danger mt-2" style="display: none; font-weight: 500;">
+          *Để cài đặt trên iPhone/iPad: Hãy bấm nút Chia sẻ (⍐) ở cạnh dưới màn hình Safari và chọn "Thêm vào MH chính".
+        </p>
       </div>
     </div>
   </div>
@@ -266,6 +274,45 @@
         listEl.innerHTML = '<div class="text-center text-danger mt-4">Lỗi kết nối</div>';
       }
     }
+    // --- XỬ LÝ NÚT CÀI ĐẶT PWA ---
+    let deferredPrompt;
+    const installBtn = document.getElementById('btn-install');
+    const iosGuide = document.getElementById('ios-guide');
+
+    // 1. Kiểm tra nếu là thiết bị iOS (Apple chặn nút bấm tự động, bắt buộc phải hướng dẫn tay)
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    // Kiểm tra xem app đã được cài chưa (iOS)
+    const isStandalone = window.navigator.standalone === true;
+    
+    if (isIOS && !isStandalone) {
+      iosGuide.style.display = 'block'; // Hiện hướng dẫn cài bằng tay cho iPhone
+    }
+
+    // 2. Bắt sự kiện cài đặt trên Android / PC (Chrome, Edge...)
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault(); // Ngăn trình duyệt tự hiện bảng thông báo
+      deferredPrompt = e; // Lưu lại sự kiện
+      installBtn.style.display = 'block'; // Hiện nút cài đặt của chúng ta
+    });
+
+    // 3. Xử lý khi bấm nút Cài đặt
+    installBtn.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt(); // Hiện bảng hỏi cài đặt của máy
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          console.log('Đã đồng ý cài đặt');
+        }
+        deferredPrompt = null; // Reset
+        installBtn.style.display = 'none'; // Ẩn nút sau khi bấm
+      }
+    });
+
+    // 4. Ẩn nút đi nếu app đã được cài đặt thành công
+    window.addEventListener('appinstalled', () => {
+      installBtn.style.display = 'none';
+      deferredPrompt = null;
+    });
 
     window.onload = syncWithServer;
   </script>
