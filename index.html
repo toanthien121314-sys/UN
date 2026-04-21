@@ -114,52 +114,30 @@
 
     .opacity-50 { opacity: 0.7 !important; }
     /* Container chú thích */
+/* Bảng ghi chú căn lề siêu chuẩn */
 .water-note {
   position: absolute;
-  right: 10px; /* Cách lề phải một chút */
-  background: rgba(255, 140, 0, 0.05); /* Nền cam nhạt cực mỏng */
-  padding: 10px 12px;
-  border-radius: 15px;
-  border: 1px dashed rgba(255, 140, 0, 0.3);
-  pointer-events: none; /* Tránh chạm nhầm */
+  right: 5px; 
+  background: rgba(255, 140, 0, 0.08); 
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px dashed var(--primary);
 }
 
 .note-item {
-  display: flex;
+  display: grid;
+  grid-template-columns: 45px 15px 15px 20px; /* Chia cột cố định: ml | icon | số | ly */
   align-items: center;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text);
-  white-space: nowrap;
+  line-height: 1.5;
 }
 
-.note-item .ml {
-  opacity: 0.6;
-}
-
-/* Dấu mũi tên chuyên nghiệp thay cho dấu bằng */
-.note-item .bi-chevron-right {
-  font-size: 0.6rem;
-  color: var(--primary);
-  opacity: 0.8;
-}
-
-/* Biểu tượng cái ly */
-.note-item .cup {
-  color: var(--primary);
-}
-
-.note-item .bi-cup-straw {
-  font-size: 0.9rem;
-}
-
-/* Điều chỉnh trên màn hình nhỏ để không bị đè chữ */
-@media (max-width: 380px) {
-  .water-note {
-    position: static;
-    margin-left: 10px;
-  }
-}
+.note-item .ml { opacity: 0.7; text-align: right; }
+.note-item .bi-chevron-right { color: var(--primary); font-size: 0.6rem; text-align: center; }
+.note-item .cup-val { color: var(--primary); text-align: center; }
+.note-item .bi-cup-straw { color: var(--primary); font-size: 0.9rem; }
   </style>
 </head>
 <body>
@@ -172,30 +150,32 @@
         <h6 class="text-uppercase small fw-bold opacity-50">Lượng nước hôm nay</h6>
         
         <div class="d-flex align-items-center justify-content-center position-relative mb-3">
-  
-  <div class="water-circle" id="water-container" style="margin: 0;">
-    <svg class="progress-ring" width="200" height="200">
-      <circle stroke="rgba(255, 140, 0, 0.1)" stroke-width="8" fill="transparent" r="85" cx="100" cy="100"/>
-      <circle id="progress-bar" class="progress-ring__circle" stroke="#FF8C00" stroke-width="8" stroke-dasharray="534.07" stroke-dashoffset="534.07" fill="transparent" r="85" cx="100" cy="100"/>
-    </svg>
-    <i class="bi bi-droplet-fill mb-1" id="water-icon"></i>
-    <div class="water-value" id="water-current">0</div>
-    <div class="water-goal-text">/ 2000 ml</div>
-  </div>
+          
+          <div class="water-circle" id="water-container" style="margin: 0;">
+            <svg class="progress-ring" width="200" height="200">
+              <circle stroke="rgba(255, 140, 0, 0.1)" stroke-width="8" fill="transparent" r="85" cx="100" cy="100"/>
+              <circle id="progress-bar" class="progress-ring__circle" stroke="#FF8C00" stroke-width="8" stroke-dasharray="534.07" stroke-dashoffset="534.07" fill="transparent" r="85" cx="100" cy="100"/>
+            </svg>
+            <i class="bi bi-droplet-fill mb-1" id="water-icon"></i>
+            <div class="water-value" id="water-current">0</div>
+            <div class="water-goal-text">/ 2000 ml</div>
+          </div>
 
-  <div class="water-note">
-    <div class="note-item">
-      <span class="ml">100ml</span>
-      <i class="bi bi-chevron-right mx-1"></i>
-      <span class="cup">½ <i class="bi bi-cup-straw"></i></span>
-    </div>
-    <div class="note-item mt-2">
-      <span class="ml">200ml</span>
-      <i class="bi bi-chevron-right mx-1"></i>
-      <span class="cup">1 <i class="bi bi-cup-straw"></i></span>
-    </div>
-  </div>
-</div>
+          <div class="water-note">
+            <div class="note-item">
+              <span class="ml">100ml</span>
+              <i class="bi bi-chevron-right"></i>
+              <span class="cup-val">½</span>
+              <i class="bi bi-cup-straw"></i>
+            </div>
+            <div class="note-item mt-1">
+              <span class="ml">200ml</span>
+              <i class="bi bi-chevron-right"></i>
+              <span class="cup-val">1</span>
+              <i class="bi bi-cup-straw"></i>
+            </div>
+          </div>
+        </div>
 
         <div class="row g-2">
           <div class="col-6"><button class="btn-main" onclick="addWater(100)">+ 100ml</button></div>
