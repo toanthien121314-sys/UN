@@ -34,7 +34,6 @@
       box-shadow: 0 8px 32px rgba(0,0,0,0.3);
     }
 
-    /* --- VÒNG TRÒN NƯỚC --- */
     .water-circle {
       width: 180px; height: 180px;
       border-radius: 50%;
@@ -48,7 +47,6 @@
     #water-icon { color: var(--primary); font-size: 1.5rem; transition: all 0.5s ease; }
     .water-value { font-size: 2.2rem; font-weight: 800; color: var(--primary); transition: all 0.5s ease; }
 
-    /* --- TRẠNG THÁI ĐẠT MỤC TIÊU --- */
     .goal-reached {
       border-color: rgba(46, 204, 113, 0.4) !important;
       background: radial-gradient(circle, rgba(46, 204, 113, 0.2) 0%, transparent 70%) !important;
@@ -58,7 +56,6 @@
       text-shadow: 0 0 15px rgba(46, 204, 113, 0.6);
     }
 
-    /* --- NÚT BẤM & CHECKBOX --- */
     .btn-main {
       background: var(--primary); color: #000; font-weight: 700;
       border-radius: 12px; border: none; padding: 12px 20px; transition: 0.2s; width: 100%;
@@ -73,7 +70,6 @@
     }
     .check-box.done { background: var(--primary); color: #000; }
 
-    /* --- THANH ĐIỀU HƯỚNG --- */
     .nav-bar {
       position: fixed; bottom: 0; width: 100%; height: 75px;
       background: rgba(20, 20, 20, 0.8); backdrop-filter: blur(20px);
@@ -82,43 +78,16 @@
     }
     .nav-item { color: #444; font-size: 1.4rem; cursor: pointer; transition: 0.2s; }
     
-    /* --- LỊCH SỬ --- */
     .history-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 18px;
-  padding: 15px 20px;
-  margin-bottom: 12px;
-  border-left: 5px solid var(--primary);
-}
-
-.history-date {
-  font-weight: 700;
-  font-size: 0.95rem;
-  flex: 1; /* Chiếm không gian bên trái */
-}
-
-.history-stats {
-  text-align: right;
-  flex: 1; /* Chiếm không gian bên phải */
-}
-
-.stat-water {
-  font-weight: 800;
-  font-size: 1rem;
-}
-
-.stat-vit {
-  font-size: 0.75rem;
-  opacity: 0.6;
-  margin-top: 2px;
-}
-
-.text-success-health {
-  color: var(--success) !important;
-}
+      display: flex; justify-content: space-between; align-items: center;
+      background: rgba(255, 255, 255, 0.05); border-radius: 18px;
+      padding: 15px 20px; margin-bottom: 12px; border-left: 5px solid var(--primary);
+    }
+    .history-date { font-weight: 700; font-size: 0.95rem; flex: 1; }
+    .history-stats { text-align: right; flex: 1; }
+    .stat-water { font-weight: 800; font-size: 1rem; }
+    .stat-vit { font-size: 0.75rem; opacity: 0.6; margin-top: 2px; }
+    .text-success-health { color: var(--success) !important; }
   </style>
 </head>
 <body>
@@ -164,7 +133,6 @@
         <p class="mb-0">Tính năng đang phát triển...</p>
       </div>
     </div>
-
   </div>
 
   <div class="nav-bar">
@@ -178,35 +146,27 @@
     let currentWater = 0;
     let lastDate = localStorage.getItem('meowHealthDate') || "";
 
-    // 1. KIỂM TRA NGÀY MỚI KHI MỞ APP
     function checkNewDay() {
       const today = new Date().toLocaleDateString('vi-VN');
-      
       if (lastDate !== today) {
-        // Qua ngày mới -> Reset về 0
         currentWater = 0;
         localStorage.setItem('meowHealthWater', 0);
         localStorage.setItem('meowHealthVitC', 'false');
         localStorage.setItem('meowHealthDate', today);
         lastDate = today;
       } else {
-        // Trong cùng 1 ngày -> Phục hồi dữ liệu từ bộ nhớ máy
         currentWater = parseInt(localStorage.getItem('meowHealthWater')) || 0;
         if (localStorage.getItem('meowHealthVitC') === 'true') {
           document.getElementById('check-vit-c').classList.add('done');
         }
       }
-      
-      // Cập nhật giao diện nước
       const waterDisplay = document.getElementById('water-current');
       const container = document.getElementById('water-container');
       waterDisplay.innerText = currentWater;
-      
       if (currentWater >= 2000) container.classList.add('goal-reached');
       else container.classList.remove('goal-reached');
     }
 
-    // 2. GỬI DỮ LIỆU LÊN GOOGLE SHEET
     async function sendToSheet(type, value) {
       try {
         await fetch(API_URL, {
@@ -217,81 +177,65 @@
       } catch (error) { console.error("Lỗi:", error); }
     }
 
-    // 3. CỘNG NƯỚC
     function addWater(ml) {
       currentWater += ml;
-      localStorage.setItem('meowHealthWater', currentWater); // Lưu tạm vào máy
-      
+      localStorage.setItem('meowHealthWater', currentWater);
       const waterDisplay = document.getElementById('water-current');
       const container = document.getElementById('water-container');
-      
       waterDisplay.innerText = currentWater;
       if (currentWater >= 2000) container.classList.add('goal-reached');
-      
       sendToSheet('Water', ml);
     }
 
-    // 4. ĐÁNH DẤU UỐNG VITAMIN
     function toggleVit(name) {
       const el = document.getElementById('check-vit-c');
       if (!el.classList.contains('done')) {
         el.classList.add('done');
-        localStorage.setItem('meowHealthVitC', 'true'); // Lưu trạng thái
+        localStorage.setItem('meowHealthVitC', 'true');
         sendToSheet('Vitamin', name);
       }
     }
 
-    // 5. CHUYỂN TAB VÀ TẢI LỊCH SỬ
     function switchTab(tabName, el) {
-      // Ẩn tất cả tab
       document.getElementById('tab-home').style.display = 'none';
       document.getElementById('tab-history').style.display = 'none';
       document.getElementById('tab-settings').style.display = 'none';
-      
-      // Hiện tab được chọn
       document.getElementById('tab-' + tabName).style.display = 'block';
-      
-      // Đổi màu icon menu
       document.querySelectorAll('.nav-item').forEach(item => item.style.color = '#444');
       el.style.color = 'var(--primary)';
-      
-      // Nếu vào tab lịch sử thì gọi API lấy dữ liệu
       if (tabName === 'history') loadHistory();
     }
 
-    // 6. LẤY DỮ LIỆU LỊCH SỬ TỪ SHEET 2async function loadHistory() {
-  const listEl = document.getElementById('history-list');
-  listEl.innerHTML = '<div class="text-center opacity-50 small mt-5">Đang tải dữ liệu...</div>';
-  
-  try {
-    const response = await fetch(API_URL);
-    const data = await response.json();
-    
-    let html = '';
-    if (data.length === 0) {
-      html = '<div class="text-center opacity-50 mt-4">Chưa có lịch sử</div>';
-    } else {
-      data.forEach(item => {
-        const isGoal = item.water >= 2000 ? 'text-success-health' : '';
-        const vitStatus = item.vitamin === 'Đã uống' ? '✅ Vitamin C' : '❌ Vitamin C';
-        
-        html += `
-          <div class="history-item">
-            <div class="history-date">${item.date}</div>
-            <div class="history-stats">
-              <div class="stat-water ${isGoal}">${item.water} ml</div>
-              <div class="stat-vit">${vitStatus}</div>
-            </div>
-          </div>`;
-      });
+    // 6. LẤY DỮ LIỆU LỊCH SỬ TỪ SHEET 2
+    async function loadHistory() {
+      const listEl = document.getElementById('history-list');
+      listEl.innerHTML = '<div class="text-center opacity-50 small mt-5">Đang tải dữ liệu...</div>';
+      try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
+        let html = '';
+        if (data.length === 0) {
+          html = '<div class="text-center opacity-50 mt-4">Chưa có lịch sử</div>';
+        } else {
+          data.forEach(item => {
+            const isGoal = item.water >= 2000 ? 'text-success-health' : '';
+            const vitStatus = item.vitamin === 'Đã uống' ? '✅ Vitamin C' : '❌ Vitamin C';
+            html += `
+              <div class="history-item">
+                <div class="history-date">${item.date}</div>
+                <div class="history-stats">
+                  <div class="stat-water ${isGoal}">${item.water} ml</div>
+                  <div class="stat-vit">${vitStatus}</div>
+                </div>
+              </div>`;
+          });
+        }
+        listEl.innerHTML = html;
+      } catch (e) {
+        listEl.innerHTML = '<div class="text-center text-danger mt-4">Lỗi kết nối</div>';
+      }
     }
-    listEl.innerHTML = html;
-  } catch (e) {
-    listEl.innerHTML = '<div class="text-center text-danger mt-4">Lỗi kết nối</div>';
-  }
-}
 
-    // Chạy kiểm tra ngày mới khi web vừa tải xong
     window.onload = checkNewDay;
   </script>
 </body>
