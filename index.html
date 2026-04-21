@@ -86,19 +86,17 @@
     .history-item {
   display: flex;
   justify-content: space-between;
-  align-items: center; /* Căn giữa theo chiều dọc */
+  align-items: center;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 18px;
-  padding: 18px 20px;
+  padding: 15px 20px;
   margin-bottom: 12px;
   border-left: 5px solid var(--primary);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
 .history-date {
   font-weight: 700;
-  font-size: 1rem;
-  color: var(--text);
+  font-size: 0.95rem;
   flex: 1; /* Chiếm không gian bên trái */
 }
 
@@ -110,17 +108,16 @@
 .stat-water {
   font-weight: 800;
   font-size: 1rem;
-  margin-bottom: 2px;
 }
 
 .stat-vit {
-  font-size: 0.8rem;
-  opacity: 0.7;
+  font-size: 0.75rem;
+  opacity: 0.6;
+  margin-top: 2px;
 }
 
 .text-success-health {
   color: var(--success) !important;
-  text-shadow: 0 0 10px rgba(46, 204, 113, 0.3);
 }
   </style>
 </head>
@@ -177,7 +174,7 @@
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbxJS9xKpJW0yuL_DRW2VZWbmzC9DZXOh_VARs-ILimljaZfACsuzF7qzZvt3pXN5qwh/exec"; 
+    const API_URL = "https://script.google.com/macros/s/AKfycbwRg2QrV3VR34a2XE-GuiGC_b0i-qUybuSUQ_A_DhG12IxqjwFqe4PukAGp2bv3z9PW/exec"; 
     let currentWater = 0;
     let lastDate = localStorage.getItem('meowHealthDate') || "";
 
@@ -262,10 +259,9 @@
       if (tabName === 'history') loadHistory();
     }
 
-    // 6. LẤY DỮ LIỆU LỊCH SỬ TỪ SHEET 2
-    async function loadHistory() {
+    // 6. LẤY DỮ LIỆU LỊCH SỬ TỪ SHEET 2async function loadHistory() {
   const listEl = document.getElementById('history-list');
-  listEl.innerHTML = '<div class="text-center opacity-50 small mt-5"><div class="spinner-border text-warning" role="status"></div><br>Đang tải dữ liệu...</div>';
+  listEl.innerHTML = '<div class="text-center opacity-50 small mt-5">Đang tải dữ liệu...</div>';
   
   try {
     const response = await fetch(API_URL);
@@ -273,25 +269,25 @@
     
     let html = '';
     if (data.length === 0) {
-      html = '<div class="text-center opacity-50 mt-4">Chưa có lịch sử lưu trữ</div>';
+      html = '<div class="text-center opacity-50 mt-4">Chưa có lịch sử</div>';
     } else {
       data.forEach(item => {
         const isGoal = item.water >= 2000 ? 'text-success-health' : '';
-        const vitIcon = item.vitamin === 'Đã uống' ? '✅ Vitamin C' : '❌ Vitamin C';
+        const vitStatus = item.vitamin === 'Đã uống' ? '✅ Vitamin C' : '❌ Vitamin C';
         
         html += `
           <div class="history-item">
             <div class="history-date">${item.date}</div>
             <div class="history-stats">
               <div class="stat-water ${isGoal}">${item.water} ml</div>
-              <div class="stat-vit">${vitIcon}</div>
+              <div class="stat-vit">${vitStatus}</div>
             </div>
           </div>`;
       });
     }
     listEl.innerHTML = html;
   } catch (e) {
-    listEl.innerHTML = '<div class="text-center text-danger mt-4">Lỗi kết nối dữ liệu lịch sử</div>';
+    listEl.innerHTML = '<div class="text-center text-danger mt-4">Lỗi kết nối</div>';
   }
 }
 
